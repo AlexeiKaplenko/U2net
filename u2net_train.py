@@ -47,7 +47,7 @@ def muti_bce_loss_fusion(d0, d1, d2, d3, d4, d5, d6, labels_v):
 
 # ------- 2. set the directory of training dataset --------
 
-model_name = 'u2net' #'u2net' #'u2netp'
+model_name = 'u2netp' #'u2net' #'u2netp'
 model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth') # pretrained model dir
 
 data_dir = os.path.join(os.getcwd(), 'train_data' + os.sep)
@@ -55,7 +55,7 @@ data_dir = os.path.join(os.getcwd(), 'train_data' + os.sep)
 # tra_label_dir = os.path.join('DUTS', 'DUTS-TR', 'DUTS-TR', 'gt_aug' + os.sep)
 
 tra_image_dir = os.path.join('FINAL1_combined' + os.sep)
-tra_label_dir = os.path.join('FINAL1_MATTE' + os.sep)
+tra_label_dir = os.path.join('FINAL1_MATTE_2' + os.sep)
 
 print("tra_image_dir", tra_image_dir)
 print("tra_label_dir", tra_label_dir)
@@ -64,8 +64,9 @@ print("tra_label_dir", tra_label_dir)
 image_ext = '.png'
 label_ext = '.png'
 
-model_dir = os.path.join(os.getcwd(), 'saved_models', model_name + os.sep)
+# model_dir = os.path.join(os.getcwd(), 'saved_models', model_name + os.sep)
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2net/u2net.pth')
+model_dir = "./saved_models/u2netp/212000.pth"
 
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/u2netp.pth')
 
@@ -74,7 +75,7 @@ model_dir = os.path.join(os.getcwd(), 'saved_models', model_name + os.sep)
 
 
 epoch_num = 100000
-batch_size_train = 8
+batch_size_train = 16
 batch_size_val = 1
 train_num = 0
 val_num = 0
@@ -107,7 +108,7 @@ salobj_dataset = SalObjDataset(
         RescaleT(320),
         RandomCrop(288),
         ToTensorLab(flag=0)]))
-salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=1)
+salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=16)
 
 # ------- 3. define model --------
 # define the net
@@ -123,7 +124,7 @@ if torch.cuda.is_available():
 
 # ------- 4. define optimizer --------
 print("---define optimizer...")
-optimizer = optim.Adam(net.parameters(), lr=0.0005, betas=(0.9, 0.999), eps=1e-08, weight_decay=0) # lr = 0.001
+optimizer = optim.Adam(net.parameters(), lr=0.0002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0) # lr = 0.001
 
 # ------- 5. training process --------
 print("---start training...")

@@ -55,12 +55,12 @@ def main():
 
     # --------- 1. get image path and name ---------
     model_name='u2netp'#u2netp
-    model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/11400.pth')
+    model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/212000.pth')
     # model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth')
     # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/u2netp.pth')
 
     # image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images')
-    image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images_mine')
+    image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images_mine', 'IMG_9793')
 
     prediction_dir = os.path.join(os.getcwd(), 'test_data', model_name + '_results' + os.sep)
 
