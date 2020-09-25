@@ -60,7 +60,7 @@ def main():
     # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/u2netp.pth')
 
     # image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images')
-    image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images_mine', 'IMG_9793')
+    image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images_mine', 'IMG')
 
     prediction_dir = os.path.join(os.getcwd(), 'test_data', model_name + '_results' + os.sep)
 
@@ -71,8 +71,9 @@ def main():
     #1. dataloader
     test_salobj_dataset = SalObjDataset(img_name_list = img_name_list,
                                         lbl_name_list = [],
-                                        transform=transforms.Compose([RescaleT(320),
-                                                                      ToTensorLab(flag=0)])
+                                        transform=transforms.Compose([
+                                                                    RescaleT((320,320)),
+                                                                    ToTensorLab(flag=0)])
                                         )
     test_salobj_dataloader = DataLoader(test_salobj_dataset,
                                         batch_size=1,
