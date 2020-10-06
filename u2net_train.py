@@ -57,9 +57,13 @@ data_dir = os.path.join(os.getcwd(), 'train_data' + os.sep)
 # tra_image_dir = os.path.join('DUTS', 'DUTS-TR', 'DUTS-TR', 'im_aug' + os.sep)
 # tra_label_dir = os.path.join('DUTS', 'DUTS-TR', 'DUTS-TR', 'gt_aug' + os.sep)
 
+# tra_image_dir = os.path.join('FINAL3_combined_resized_320' + os.sep)
+
 tra_image_dir = os.path.join('FINAL3_combined' + os.sep)
+tra_label_dir = os.path.join('FINAL3_MATTE' + os.sep)
+
 # tra_label_dir = os.path.join('FINAL3_MATTE_predicted' + os.sep)
-tra_label_dir = os.path.join('FINAL3_MATTE_predicted' + os.sep)
+tra_prior_dir = os.path.join('FINAL3_MATTE_predicted_2' + os.sep)
 
 
 # tra_image_dir = os.path.join('test1_image' + os.sep)
@@ -71,12 +75,13 @@ print("tra_label_dir", tra_label_dir)
 # image_ext = '.jpg'
 image_ext = '.png'
 label_ext = '.png'
+prior_ext = '.png'
 
 # model_dir = os.path.join(os.getcwd(), 'saved_models', model_name + os.sep)
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2net/u2net.pth')
 # model_dir = "./saved_models/u2netp/202000.pth"
-model_dir = "./saved_models/u2netp/itr_8000_train_0.273093_tar_0.022038.pth"
-
+model_dir = "./saved_models/u2netp/itr_10000_train_0.378115_tar_0.037526.pth"
+# model_dir = "./saved_models/u2netp/itr_66000_train_0.400424_tar_0.043298.pth"
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/u2netp.pth')
 
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2net/u2net_bce_itr_2000_train_2.724735_tar_0.386822.pth')
@@ -95,6 +100,7 @@ print('datadir', data_dir + tra_image_dir + '*' + image_ext)
 tra_img_name_list = glob.glob(data_dir + tra_image_dir + '*' + image_ext)
 
 tra_lbl_name_list = []
+tra_pri_name_list = []
 for img_path in tra_img_name_list:
 	img_name = img_path.split(os.sep)[-1]
 
@@ -105,15 +111,18 @@ for img_path in tra_img_name_list:
 		imidx = imidx + "." + bbb[i]
 
 	tra_lbl_name_list.append(data_dir + tra_label_dir + imidx + label_ext)
+	tra_pri_name_list.append(data_dir + tra_prior_dir + imidx + prior_ext)
 
 print("---")
 print("train images: ", len(tra_img_name_list))
 print("train labels: ", len(tra_lbl_name_list))
+print("train prior: ", len(tra_pri_name_list))
 print("---")
 
 salobj_dataset = SalObjDataset(
     img_name_list=tra_img_name_list,
     lbl_name_list=tra_lbl_name_list,
+    pri_name_list=tra_pri_name_list,
     transform=transforms.Compose([
         Augment_prior(0.5),
         RescaleT((320,320)),
@@ -136,7 +145,7 @@ if torch.cuda.is_available():
 
 # ------- 4. define optimizer --------
 print("---define optimizer...")
-optimizer = optim.Adam(net.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0) # lr = 0.001
+optimizer = optim.Adam(net.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0) # lr = 0.001
 
 # ------- 5. training process --------
 print("---start training...")

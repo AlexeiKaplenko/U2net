@@ -64,6 +64,7 @@ def main():
     # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/prior_0.5_affine_0.05_loss_0.4585.pth')
 
     model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/Best1_320px.pth')
+    # model_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/112000.pth'
 
     # model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth')
     # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/u2netp.pth')
@@ -76,22 +77,23 @@ def main():
     # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/train_data/FINAL3_MATTE_predicted_2'
 
     # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/0.1Ct small/spin/0.1ct small__2020-06-07-15-39-06'
-    image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/0.1ct/spins/0.1ct__2020-04-17-17-15-47'
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/0.1ct/spins/0.1ct__2020-04-17-17-15-47'
+    image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/images'
     prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/MATTE4_predicted'
     
 
     # prediction_dir = os.path.join(os.getcwd(), 'test_data', model_name + '_results' + os.sep)
-    output_dir = os.path.join(os.getcwd(), 'test_data', 'FINAL4_MATTE' + os.sep)
+    output_dir = os.path.join(os.getcwd(), 'test_data', 'FINAL5' + os.sep)
     
     # output_dir = 'test_data' + os.sep + 'FINAL3_MATTE_predicted_2' + os.sep
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
 
-    img_name_list = glob.glob(image_dir + os.sep + '*')
-    # lbl_name_list = glob.glob(label_dir + os.sep + '*')
-    pri_name_list = glob.glob(prior_dir + os.sep + '*')
+    img_name_list = sorted(glob.glob(image_dir + os.sep + '*'))
+    # lbl_name_list = sorted(glob.glob(label_dir + os.sep + '*'))
+    # pri_name_list = sorted(glob.glob(prior_dir + os.sep + '*'))
     lbl_name_list = []
-    # pri_name_list = []
+    pri_name_list = []
 
     print('len(lbl_name_list)', len(lbl_name_list))
 
@@ -143,9 +145,15 @@ def main():
 
         print("inferencing:", img_name_list[i_test].split(os.sep)[-1])
 
+        print('img_name_list', img_name_list[i_test])
+
+        hires_image = cv2.imread(img_name_list[i_test])
+        hires_image = cv2.cvtColor(hires_image, cv2.COLOR_BGR2RGB)
+
+        height, width = hires_image.shape[:2]
+
         inputs_test = data_test['image']
         print('inputs_test.shape', inputs_test.shape)
-        # height, width = inputs_test.shape[2:]
         inputs_test = inputs_test.type(torch.FloatTensor)
 
         if torch.cuda.is_available():
@@ -158,7 +166,7 @@ def main():
         # normalization
         pred = d0[0,0,:,:] * 255
         pred = pred.cpu().detach().numpy()
-        # pred = cv2.resize(pred, (height, width))
+        pred = cv2.resize(pred, (height, width), cv2.INTER_LINEAR)
         print('pred_shape', pred.shape)
 
         inputs = inputs_test.cpu().detach().numpy()[0]
@@ -171,39 +179,31 @@ def main():
         input_image = np.moveaxis(input_image, 0, 2)
         input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
-        # print('inputs_shape', inputs.shape)
-        # print('inputs_shape', type(inputs))
 
-        # pred = (d0[0][0] + d1[0][0] + d2[0][0] + d3[0][0] + d4[0][0] + d5[0][0] + d6[0][0]) / 7 * 255
-        # pred = normPRED(pred)
-
-        # save_output(img_name_list[i_test],pred,output_dir)
-
-        # print('save_path', os.path.join(output_dir, str(i_test)+'.png'))
-
-
-        ## Write output with the same name as input
-
-        # final_image = np.concatenate((input_image, np.expand_dims(pred, axis=-1)), axis=-1)
-
-        final_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2RGBA)
+        final_image = cv2.cvtColor(hires_image, cv2.COLOR_RGB2RGBA)
         print('final_image_shape', final_image.shape)
         final_image[:,:,3] = pred
 
         image_pil = Image.fromarray(np.uint8(final_image))
         # image_pil.save(os.path.join(output_dir, img_name_list[i_test].split(os.sep)[-1])+'.png')
 
-        image_pil.save(os.path.join(output_dir, str(i_test)+'_final_output.png')+'.png')
+        
+        #Save PIL image
+        image_pil.save(os.path.join(output_dir, str(i_test)+'_final_output.png'))
 
-
+        # save CV2 image
         # cv2.imwrite(os.path.join(output_dir, img_name_list[i_test].split(os.sep)[-1]), final_image)
         # cv2.imwrite(os.path.join(output_dir, 'final_'+img_name_list[i_test].split(os.sep)[-1]), np.expand_dims(pred, axis=-1)*input_image)
 
 
-        cv2.imwrite(os.path.join(output_dir, str(i_test)+'_pred.png'), pred)
-        cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), input_image)
-        if inputs.shape[0] == 4:
-            cv2.imwrite(os.path.join(output_dir, str(i_test)+'_prior.png'), prior) 
+        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_pred.png'), pred)
+        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), input_image)
+        
+        hires_image = cv2.cvtColor(hires_image, cv2.COLOR_BGR2RGB)
+        cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), hires_image)
+
+        # if inputs.shape[0] == 4:
+        #     cv2.imwrite(os.path.join(output_dir, str(i_test)+'_prior.png'), prior) 
 
         del d0,d1,d2,d3,d4,d5,d6
 
