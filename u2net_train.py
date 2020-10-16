@@ -59,11 +59,13 @@ data_dir = os.path.join(os.getcwd(), 'train_data' + os.sep)
 
 # tra_image_dir = os.path.join('FINAL3_combined_resized_320' + os.sep)
 
-tra_image_dir = os.path.join('FINAL3_combined' + os.sep)
-tra_label_dir = os.path.join('FINAL3_MATTE' + os.sep)
+tra_image_dir = os.path.join('FINAL5.1_combined' + os.sep)
+tra_label_dir = os.path.join('FINAL5.1_MATTE' + os.sep)
 
 # tra_label_dir = os.path.join('FINAL3_MATTE_predicted' + os.sep)
-tra_prior_dir = os.path.join('FINAL3_MATTE_predicted_2' + os.sep)
+# tra_prior_dir = os.path.join('FINAL3_MATTE_predicted_2' + os.sep)
+tra_prior_dir = os.path.join('FINAL5.1_MATTE_predicted_1' + os.sep)
+
 
 
 # tra_image_dir = os.path.join('test1_image' + os.sep)
@@ -80,12 +82,13 @@ prior_ext = '.png'
 # model_dir = os.path.join(os.getcwd(), 'saved_models', model_name + os.sep)
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2net/u2net.pth')
 # model_dir = "./saved_models/u2netp/202000.pth"
-model_dir = "./saved_models/u2netp/itr_10000_train_0.378115_tar_0.037526.pth"
 # model_dir = "./saved_models/u2netp/itr_66000_train_0.400424_tar_0.043298.pth"
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/u2netp.pth')
-
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2net/u2net_bce_itr_2000_train_2.724735_tar_0.386822.pth')
 # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/11400.pth')
+
+# model_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/Best1_320px.pth'
+model_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/best3_320px.pth'
 
 
 epoch_num = 100000
@@ -126,10 +129,10 @@ salobj_dataset = SalObjDataset(
     transform=transforms.Compose([
         Augment_prior(0.5),
         RescaleT((320,320)),
-        # RandomCrop(288), #cause of misalignment of label and input
-        ColorJitter(brightness=(0.9,1.1),contrast=(0.9,1.1),saturation=(0.9,1.1),hue=0.1),
+        # RandomCrop(288), #root cause of misalignment of label and input
+        ColorJitter(brightness=(0.8,1.2),contrast=(0.8,1.2),saturation=(0.9,1.1),hue=0.05),
         ToTensorLab(flag=0)]))
-salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=32)
+salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=1)
 
 # ------- 3. define model --------
 # define the net
@@ -199,8 +202,13 @@ for epoch in range(0, epoch_num):
         epoch + 1, epoch_num, (i + 1) * batch_size_train, train_num, ite_num, running_loss / ite_num4val, running_tar_loss / ite_num4val))
 
         if ite_num % save_freq == 0:
-
+            
+            #save state dictionary only
             torch.save(net.state_dict(), "saved_models/u2netp/itr_%d_train_%3f_tar_%3f.pth" % (ite_num, running_loss / ite_num4val, running_tar_loss / ite_num4val))
+
+            #save entire model
+            # torch.save(net, "saved_models/u2netp/itr_%d_train_%3f_tar_%3f.pth" % (ite_num, running_loss / ite_num4val, running_tar_loss / ite_num4val))
+
             running_loss = 0.0
             running_tar_loss = 0.0
             net.train()  # resume train

@@ -35,35 +35,16 @@ def normPRED(d):
 
     return dn
 
-# def save_output(image_name,pred,d_dir):
-
-#     predict = pred
-#     predict = predict.squeeze()
-#     predict_np = predict.cpu().data.numpy()
-
-#     im = Image.fromarray(predict_np*255).convert('RGB')
-#     img_name = image_name.split(os.sep)[-1]
-#     image = io.imread(image_name)
-#     imo = im.resize((image.shape[1],image.shape[0]),resample=Image.BILINEAR)
-
-#     pb_np = np.array(imo)
-
-#     aaa = img_name.split(".")
-#     bbb = aaa[0:-1]
-#     imidx = bbb[0]
-#     for i in range(1,len(bbb)):
-#         imidx = imidx + "." + bbb[i]
-
-#     imo.save(d_dir+imidx+'.png')
-
 def main():
     # filename_list = glob.glob('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/train_data/FINAL3_combined')
     # --------- 1. get image path and name ---------
-    model_name='u2netp'#u2netp
+    model_name='u2net'#u2netp
     # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/166000_train_0.3457.pth')    model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/166000_train_0.3457.pth')
     # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/prior_0.5_affine_0.05_loss_0.4585.pth')
 
-    model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/Best1_320px.pth')
+    model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/best4_large.pth')
+    # model_dir = os.path.join('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/best3_large.pth')
+
     # model_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/saved_models/u2netp/112000.pth'
 
     # model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth')
@@ -78,9 +59,33 @@ def main():
 
     # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/0.1Ct small/spin/0.1ct small__2020-06-07-15-39-06'
     # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/0.1ct/spins/0.1ct__2020-04-17-17-15-47'
-    image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/images'
-    prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/MATTE4_predicted'
     
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/images'
+    # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/MATTE4_predicted'
+    
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/train_data/FINAL5_combined'
+    # label_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/train_data/FINAL5_MATTE'
+    # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/train_data/FINAL5_MATTE'
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/Digis1_images1_resized'
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/FINAL5/input'
+    # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/FINAL5/prior'
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/Motion-Guided-Attention/dataset/DAVIS/JPEGImages/480p/ring'
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/pytorch-pwc/INPUT/test3'
+    # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/FINAL5' 
+
+    image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/Digis1/Extraction/images'
+
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/dataset/video2frames/test1'
+    # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/FINAL5/prior_video_pred'
+
+    # image_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/FINAL5_input1'
+    # prior_dir = '/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/test_data/FINAL5_pred1'
 
     # prediction_dir = os.path.join(os.getcwd(), 'test_data', model_name + '_results' + os.sep)
     output_dir = os.path.join(os.getcwd(), 'test_data', 'FINAL5' + os.sep)
@@ -90,12 +95,13 @@ def main():
         os.makedirs(output_dir, exist_ok=True)
 
     img_name_list = sorted(glob.glob(image_dir + os.sep + '*'))
-    # lbl_name_list = sorted(glob.glob(label_dir + os.sep + '*'))
-    # pri_name_list = sorted(glob.glob(prior_dir + os.sep + '*'))
-    lbl_name_list = []
-    pri_name_list = []
 
-    print('len(lbl_name_list)', len(lbl_name_list))
+    # lbl_name_list = sorted(glob.glob(label_dir + os.sep + '*'))
+    lbl_name_list = [] 
+
+    # pri_name_list = sorted(glob.glob(prior_dir + os.sep + '*'))
+    pri_name_list = []
+    # print('len(lbl_name_list)', len(lbl_name_list))
 
     # print(img_name_list)
 
@@ -111,7 +117,7 @@ def main():
                                         # )
 
                                         transform=transforms.Compose([
-                                            Augment_prior(0.),
+                                            Augment_prior(1.),
                                             RescaleT((320,320)),
                                             # RandomCrop(288), #cause of misalignment of label and input
                                             # ColorJitter(brightness=(0.9,1.1),contrast=(0.9,1.1),saturation=(0.9,1.1),hue=0.1),
@@ -153,6 +159,10 @@ def main():
         height, width = hires_image.shape[:2]
 
         inputs_test = data_test['image']
+        label = data_test['label']
+        label = label.cpu().detach().numpy()[0][0] * 255
+        print('label', label.shape)
+
         print('inputs_test.shape', inputs_test.shape)
         inputs_test = inputs_test.type(torch.FloatTensor)
 
@@ -166,7 +176,9 @@ def main():
         # normalization
         pred = d0[0,0,:,:] * 255
         pred = pred.cpu().detach().numpy()
-        pred = cv2.resize(pred, (height, width), cv2.INTER_LINEAR)
+        # pred = cv2.resize(pred, (height, width), cv2.INTER_LINEAR)
+        pred = cv2.resize(pred, (width, height), cv2.INTER_LINEAR)
+
         print('pred_shape', pred.shape)
 
         inputs = inputs_test.cpu().detach().numpy()[0]
@@ -174,7 +186,6 @@ def main():
 
         if inputs.shape[0] == 4:
             prior = inputs[3] * 255
-            # print('prior_shape', prior.shape)
 
         input_image = np.moveaxis(input_image, 0, 2)
         input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
@@ -188,22 +199,44 @@ def main():
         # image_pil.save(os.path.join(output_dir, img_name_list[i_test].split(os.sep)[-1])+'.png')
 
         
-        #Save PIL image
+        # #Save Input and final output
         image_pil.save(os.path.join(output_dir, str(i_test)+'_final_output.png'))
-
-        # save CV2 image
-        # cv2.imwrite(os.path.join(output_dir, img_name_list[i_test].split(os.sep)[-1]), final_image)
-        # cv2.imwrite(os.path.join(output_dir, 'final_'+img_name_list[i_test].split(os.sep)[-1]), np.expand_dims(pred, axis=-1)*input_image)
-
-
-        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_pred.png'), pred)
-        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), input_image)
-        
         hires_image = cv2.cvtColor(hires_image, cv2.COLOR_BGR2RGB)
         cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), hires_image)
 
-        # if inputs.shape[0] == 4:
-        #     cv2.imwrite(os.path.join(output_dir, str(i_test)+'_prior.png'), prior) 
+        # #save CV2 image
+        # cv2.imwrite(os.path.join(output_dir, '{:03d}.png'.format(i_test+1)), pred)
+        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_pred.png'), pred)
+        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), input_image)
+
+        # cv2.imwrite(os.path.join(output_dir, str(i_test)+'_prior.png'), prior) 
+
+        # # Prepare data for large network
+        # if not os.path.exists(output_dir + '/' + 'prior'):
+        #      os.makedirs(output_dir + '/' + 'prior', exist_ok=True)
+        # if not os.path.exists(output_dir + '/' + 'input'):
+        #      os.makedirs(output_dir + '/' + 'input', exist_ok=True)
+        # if not os.path.exists(output_dir + '/' + 'label'):
+        #      os.makedirs(output_dir + '/' + 'label', exist_ok=True)
+
+        # cv2.imwrite(os.path.join(output_dir + '/' + 'prior', str(i_test)+'.png'), pred)
+        # cv2.imwrite(os.path.join(output_dir + '/' + 'input', str(i_test)+'.png'), input_image)
+        # cv2.imwrite(os.path.join(output_dir + '/' + 'label', str(i_test)+'.png'), label)
+
+        # # Prepare data for large network video
+        # if not os.path.exists(output_dir + '/' + 'prior_video'):
+        #      os.makedirs(output_dir + '/' + 'prior_video', exist_ok=True)
+        # if not os.path.exists(output_dir + '/' + 'input_video'):
+        #      os.makedirs(output_dir + '/' + 'input_video', exist_ok=True)
+        # if not os.path.exists(output_dir + '/' + 'label_video'):
+        #      os.makedirs(output_dir + '/' + 'label_video', exist_ok=True)
+
+        # if i_test == 0:
+        #     cv2.imwrite(os.path.join(output_dir + '/' + 'prior_video', str(i_test)+'.png'), np.zeros(pred.shape))
+
+        # cv2.imwrite(os.path.join(output_dir + '/' + 'prior_video', str(i_test+1)+'.png'), pred)
+        # cv2.imwrite(os.path.join(output_dir + '/' + 'input_video', str(i_test)+'.png'), input_image)
+        # # cv2.imwrite(os.path.join(output_dir + '/' + 'label_video', str(i_test)+'.png'), label)
 
         del d0,d1,d2,d3,d4,d5,d6
 

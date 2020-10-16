@@ -35,27 +35,6 @@ def normPRED(d):
 
     return dn
 
-# def save_output(image_name,pred,d_dir):
-
-#     predict = pred
-#     predict = predict.squeeze()
-#     predict_np = predict.cpu().data.numpy()
-
-#     im = Image.fromarray(predict_np*255).convert('RGB')
-#     img_name = image_name.split(os.sep)[-1]
-#     image = io.imread(image_name)
-#     imo = im.resize((image.shape[1],image.shape[0]),resample=Image.BILINEAR)
-
-#     pb_np = np.array(imo)
-
-#     aaa = img_name.split(".")
-#     bbb = aaa[0:-1]
-#     imidx = bbb[0]
-#     for i in range(1,len(bbb)):
-#         imidx = imidx + "." + bbb[i]
-
-#     imo.save(d_dir+imidx+'.png')
-
 def main():
     # filename_list = glob.glob('/home/xkaple00/JUPYTER_SHARED/Digis/Background_removal/U-2-Net/train_data/FINAL3_combined')
     # --------- 1. get image path and name ---------
@@ -171,34 +150,13 @@ def main():
         input_image = np.moveaxis(input_image, 0, 2)
         input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
-        # print('inputs_shape', inputs.shape)
-        # print('inputs_shape', type(inputs))
-
-        # pred = (d0[0][0] + d1[0][0] + d2[0][0] + d3[0][0] + d4[0][0] + d5[0][0] + d6[0][0]) / 7 * 255
-        # pred = normPRED(pred)
-
-        # save_output(img_name_list[i_test],pred,output_dir)
-
-        # print('save_path', os.path.join(output_dir, str(i_test)+'.png'))
-
-
-        ## Write output with the same name as input
-
-        # final_image = np.concatenate((input_image, np.expand_dims(pred, axis=-1)), axis=-1)
-
         final_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2RGBA)
         print('final_image_shape', final_image.shape)
         final_image[:,:,3] = pred
 
         image_pil = Image.fromarray(np.uint8(final_image))
-        # image_pil.save(os.path.join(output_dir, img_name_list[i_test].split(os.sep)[-1])+'.png')
 
         image_pil.save(os.path.join(output_dir, str(i_test)+'_final_output.png')+'.png')
-
-
-        # cv2.imwrite(os.path.join(output_dir, img_name_list[i_test].split(os.sep)[-1]), final_image)
-        # cv2.imwrite(os.path.join(output_dir, 'final_'+img_name_list[i_test].split(os.sep)[-1]), np.expand_dims(pred, axis=-1)*input_image)
-
 
         cv2.imwrite(os.path.join(output_dir, str(i_test)+'_pred.png'), pred)
         cv2.imwrite(os.path.join(output_dir, str(i_test)+'_inputs.png'), input_image)
